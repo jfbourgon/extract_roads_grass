@@ -4,7 +4,7 @@ Only Windows now
 
 ## Installation
 
-Install GRASS GIS using OSGeo4W installer. For example for 64bit, you can use https://download.osgeo.org/osgeo4w/osgeo4w-setup-x86_64-v1.exe
+Install GRASS GIS using OSGeo4W installer. You can use [https://download.osgeo.org/osgeo4w/osgeo4w-setup-x86_64-v1.exe](https://download.osgeo.org/osgeo4w/v2/osgeo4w-setup.exe)
 
 In the OSGeo4W installer pop-up, you’ll be given a choice to choose the installation mode. Choose the "Express Desktop Install" option, and check 1- GRASS and 2-GDAL and continue.
 
