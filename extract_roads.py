@@ -13,7 +13,6 @@ from osgeo import gdal, osr
 
 
 gdal.DontUseExceptions()
-#grass8bin = grass8bin_win = r"C:\OSGeo4W\bin\grass84.bat"
 
 def cmd_interface(argv=None):
     
