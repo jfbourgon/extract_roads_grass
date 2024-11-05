@@ -9,7 +9,6 @@ from pathlib import Path
 from osgeo import gdal, osr
 
 # Import GRASS Python bindings
-from grass_session import Session
 import grass.script as grass
 import grass.script.setup as gsetup
 
@@ -57,31 +56,35 @@ if __name__ == "__main__":
         start_time = time.time()
         
         with tempfile.TemporaryDirectory() as gisdb:
-            with Session(gisdb=gisdb, 
-                         location=str(uuid.uuid4()), 
-                         create_opts= f"EPSG:{epsg}"):                
-                # Print current GRASS GIS environment
-                print("--- GRASS GIS - Current GRASS GIS environment ---")
-                print(f"GRASS Version {grass.version().version}")
-                print(grass.gisenv())
-                
-                output_name = "roads"
-                grass.run_command('r.import', input=road_dataset_path, output=output_name, overwrite=True)
-                grass.run_command('g.region', flags='p', raster=output_name)
-                grass.run_command('r.to.vect', input=output_name, output='roads_v', type='line', flags='s')
-                grass.run_command('v.generalize', input='roads_v', output='roads_v_smooth', method='chaiken', threshold=10)
-                grass.run_command('v.out.ogr', 
-                            input='roads_v_smooth', 
-                            output=str(road_geopackage), 
-                            format='GPKG', 
-                            layer='roads_1', 
-                            flags='c', 
-                            overwrite=True)
-                
-                total_time = time.time() - start_time
-                print(
-                    f"------------- Road Extraction for {road_dataset_name} Completed in {(total_time // 60):.0f}m {(total_time % 60):.0f}s -------------"
-                )
-                #shutil.rmtree(location_path)
-                gc.collect()
+            #gisdb = "/gpfs/fs5/nrcan/nrcan_geobase/work/dev/datacube/jfb001/extract_roads_grass/giddb"
+            location = str(uuid.uuid4())
+            mapset = MAPSET
+
+            grass.create_project(os.path.join(gisdb, location), epsg=epsg)
+            gsetup.init(gisdb, location, mapset)
+
+            # Print current GRASS GIS environment
+            print("--- GRASS GIS - Current version and environment ---")
+            print(f"GRASS Version {grass.version().version}")
+            print(grass.gisenv())
+            
+            output_name = "roads"
+            grass.run_command('r.import', input=road_dataset_path, output=output_name, overwrite=True)
+            grass.run_command('g.region', flags='p', raster=output_name)
+            grass.run_command('r.to.vect', input=output_name, output='roads_v', type='line', flags='s')
+            grass.run_command('v.generalize', input='roads_v', output='roads_v_smooth', method='chaiken', threshold=10)
+            grass.run_command('v.out.ogr', 
+                        input='roads_v_smooth', 
+                        output=str(road_geopackage), 
+                        format='GPKG', 
+                        layer='roads_1', 
+                        flags='c', 
+                        overwrite=True)
+            
+            total_time = time.time() - start_time
+            print(
+                f"------------- Road Extraction for {road_dataset_name} Completed in {(total_time // 60):.0f}m {(total_time % 60):.0f}s -------------"
+            )
+            #shutil.rmtree(location_path)
+            gc.collect()
 
